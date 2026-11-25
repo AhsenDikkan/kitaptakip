@@ -1,0 +1,18 @@
+<div class="manual-card">
+  <h3>Elle Kitap Ekle</h3>
+  <form method="post" action="{{ url_for('add_manual') }}" class="row g-2">
+    <div class="col-md-6"><input class="form-control" name="title" placeholder="Kitap adı *" required></div>
+    <div class="col-md-6"><input class="form-control" name="author" placeholder="Yazar"></div>
+    <div class="col-md-4"><input class="form-control" name="publisher" placeholder="Yayınevi"></div>
+    <div class="col-md-3"><input class="form-control" name="page_count" type="number" min="1" placeholder="Sayfa sayısı"></div>
+    <div class="col-md-3"><input class="form-control" name="isbn" placeholder="ISBN"></div>
+    <div class="col-md-2">
+      <select class="form-control" name="status">
+        <option value="okunacak">Okunacak</option>
+        <option value="okunuyor">Okunuyor</option>
+        <option value="okundu">Okundu</option>
+      </select>
+    </div>
+    <div class="col-12"><button class="btn btn-primary">Elle ekle</button></div>
+  </form>
+</div>

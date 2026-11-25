@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="420" viewBox="0 0 300 420">
+  <rect width="300" height="420" fill="#e2e8f0"/>
+  <path d="M75 90h150v240H75z" fill="#fff" stroke="#94a3b8" stroke-width="8"/>
+  <text x="150" y="210" text-anchor="middle" fill="#64748b" font-family="Arial" font-size="24">Kapak yok</text>
+</svg>

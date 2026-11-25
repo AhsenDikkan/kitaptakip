@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-wrap">
+  <form class="login-card" method="post">
+    <h1>📚 Kitap Takip</h1>
+    <div class="mb-3">
+      <label class="form-label">Kullanıcı adı</label>
+      <input class="form-control" name="username" required autofocus>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Şifre</label>
+      <input class="form-control" type="password" name="password" required>
+    </div>
+    <button class="btn btn-primary w-100">Giriş</button>
+  </form>
+</div>
+{% endblock %}

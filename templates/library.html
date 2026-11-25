@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<ul class="nav shelf-tabs mb-4">
+  <li><a class="{{ 'active' if status == 'okunacak' }}" href="{{ url_for('library', status='okunacak') }}">Okunacak <span>{{ counts.okunacak }}</span></a></li>
+  <li><a class="{{ 'active' if status == 'okunuyor' }}" href="{{ url_for('library', status='okunuyor') }}">Okunuyor <span>{{ counts.okunuyor }}</span></a></li>
+  <li><a class="{{ 'active' if status == 'okundu' }}" href="{{ url_for('library', status='okundu') }}">Okundu <span>{{ counts.okundu }}</span></a></li>
+</ul>
+<div class="book-grid">
+  {% for book in books %}
+  <article class="book-card">
+    <img class="book-cover" src="{{ url_for('static', filename=book.local_cover) if book.local_cover else url_for('static', filename='kapak-yok.svg') }}" alt="{{ book.title }}">
+    <span class="shelf-badge badge-{{ status }}">{{ status|capitalize }}</span>
+    <h3>{{ book.title }}</h3>
+    <p class="book-author">{{ book.author or 'Yazar belirtilmemiş' }}</p>
+    {% if status == 'okunuyor' %}
+      {% set percent = (book.current_page * 100 // book.page_count) if book.page_count else 0 %}
+      <div class="progress"><div class="progress-bar" style="width: {{ percent }}%"></div></div>
+      <small>{{ book.current_page }} / {{ book.page_count or '?' }} sayfa</small>
+    {% endif %}
+    {% if book.cover_url %}
+      <a class="book-link" href="{{ book.cover_url }}" target="_blank">Kitapyurdu'nda gör</a>
+    {% elif book.isbn %}
+      <a class="book-link" href="https://www.kitapyurdu.com/index.php?route=product/search&filter_name={{ book.isbn }}" target="_blank">Kitapyurdu'nda gör</a>
+    {% endif %}
+    <form method="post" action="{{ url_for('change_status', book_id=book.id) }}" class="mt-2">
+      <input type="hidden" name="status" value="{{ 'okunuyor' if status == 'okunacak' else 'okundu' if status == 'okunuyor' else 'okunuyor' }}">
+      <button class="btn btn-sm btn-outline-primary w-100">
+        {% if status == 'okunacak' %}Okumaya Başla{% elif status == 'okunuyor' %}Okundu olarak işaretle{% else %}Tekrar Okunuyor{% endif %}
+      </button>
+    </form>
+    {% if status == 'okunuyor' %}
+      <form method="post" action="{{ url_for('add_reading_log', book_id=book.id) }}" class="reading-form">
+        <input name="pages" type="number" min="1" placeholder="Kalınan sayfa" required>
+        <button class="btn btn-primary">Bugün okudum</button>
+      </form>
+      <button class="btn btn-link estimate-button" data-url="{{ url_for('estimate', book_id=book.id) }}">Bitiş tahmini</button>
+      <p class="estimate-text"></p>
+      {% if book.logs %}
+      {% set last = book.logs[0] %}
+      <form method="post" action="{{ url_for('delete_reading_log', log_id=last.id) }}" class="d-inline">
+        <input type="hidden" name="status" value="okunuyor">
+        <button class="btn btn-sm btn-link text-danger">Son kaydı sil ({{ last.logged_at }})</button>
+      </form>
+      {% endif %}
+    {% endif %}
+    {% if status == 'okundu' %}
+      <form method="post" action="{{ url_for('update_rating', book_id=book.id) }}" class="rating-form">
+        <input type="hidden" name="status" value="okundu">
+        <select name="rating" class="form-select form-select-sm">
+          {% for value in range(6) %}<option value="{{ value }}" {{ 'selected' if book.rating == value }}>{{ value if value else 'Puan yok' }}{{ ' yıldız' if value else '' }}</option>{% endfor %}
+        </select>
+        <input name="note" class="form-control form-control-sm" value="{{ book.note or '' }}" placeholder="Kısa not">
+        <button class="btn btn-sm btn-primary">Kaydet</button>
+      </form>
+    {% endif %}
+  </article>
+  {% else %}
+  <p>Bu rafta kitap yok.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.estimate-button').forEach(button => {
+  button.addEventListener('click', async () => {
+    const response = await fetch(button.dataset.url);
+    const data = await response.json();
+    button.nextElementSibling.textContent = data.text;
+  });
+});
+</script>
+{% endblock %}

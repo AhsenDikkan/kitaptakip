@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>İstatistik</h2>
+<div class="stats-grid">
+  <div class="stat-card"><strong>{{ status_text }}</strong></div>
+  <div class="stat-card"><strong>{{ streak }} günlük</strong><span>okuma serisi</span></div>
+</div>
+<div class="chart-card">
+  <h3>Aylık Okunan Sayfa</h3>
+  <canvas id="pagesChart"></canvas>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('pagesChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],
+    datasets: [{label: 'Sayfa', data: {{ monthly|tojson }}, backgroundColor: '#EC691F'}]
+  },
+  options: {responsive: true}
+});
+</script>
+{% endblock %}
